@@ -67,7 +67,9 @@
 <body>
     <div id="quiz-container">
         <div id="start-screen">
-            <h1>이태형의 우당탕탕 의학용어 퀴즈 2024년도 3학년 2학기 버전</h1>
+            <h1>이태형의 우당탕탕 의학용어 퀴즈</h1>
+		<p>2024년도 3학년 2학기 ver</p>
+		<p>철자가 틀린 문제가 있으면 알려주시면 수정하겠습니다. 모두 퀴즈 만점 받으세요.</p>
             <label for="questionCount">풀 문제 수 선택:</label>
             <input type="range" id="questionCount" min="1" max="100" value="10" oninput="document.getElementById('rangeValue').textContent = this.value">
             <p>선택한 문제 수: <span id="rangeValue">10</span></p>
@@ -76,7 +78,6 @@
             <button onclick="selectSubject('아동실습퀴즈')">아동실습퀴즈(123문제)</button>
             <button onclick="selectSubject('아동실습퀴즈2')">아동실습퀴즈(한영변경)</button>
             <button onclick="selectSubject('정신실습퀴즈')">정신실습퀴즈(32문제)</button>
-	<p>철자가 틀린 문제가 있으면 알려주시면 수정하겠습니다. 모두 퀴즈 만점 받으세요.</p>
         </div>
         <div id="quiz-screen" style="display: none;">
             <h1 id="subject-title">의학용어 퀴즈</h1>
