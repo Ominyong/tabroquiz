@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>이태형의 우당탕탕 의학용어 퀴즈 2024년도 3학년 2학기 버전</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 10px;
+            background-color: #f9f9f9;
+            line-height: 1.6;
+        }
+        #quiz-container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input[type="text"], input[type="range"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            margin-top: 10px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:active {
+            background-color: #45a049;
+        }
+        #result, #score, #timer, #questionNumber {
+            margin-top: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+        #wrong-answers {
+            margin-top: 20px;
+        }
+        #retryButton, #backButton, #goBackButton {
+            display: none;
+            margin-top: 10px;
+            font-size: 18px;
+            padding: 15px;
+            cursor: pointer;
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        #backButton, #goBackButton {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <div id="start-screen">
+            <h1>이태형의 우당탕탕 의학용어 퀴즈 2024년도 3학년 2학기 버전</h1>
+            <label for="questionCount">풀 문제 수 선택:</label>
+            <input type="range" id="questionCount" min="1" max="100" value="10" oninput="document.getElementById('rangeValue').textContent = this.value">
+            <p>선택한 문제 수: <span id="rangeValue">10</span></p>
+            <button onclick="selectSubject('성인실습퀴즈')">성인실습퀴즈(50문제)</button>
+            <button onclick="selectSubject('성인실습퀴즈2')">성인실습퀴즈(한영변경)</button>
+            <button onclick="selectSubject('아동실습퀴즈')">아동실습퀴즈</button>
+            <button onclick="selectSubject('정신실습퀴즈')">정신실습퀴즈(32문제)</button>
+        </div>
+        <div id="quiz-screen" style="display: none;">
+            <h1 id="subject-title">의학용어 퀴즈</h1>
+            <p id="questionNumber"></p> <!-- 문제 번호 표시 -->
+            <p id="question">여기서 문제는 랜덤으로 나오게 됩니다.</p>
+            <input type="text" id="answer" placeholder="여기에 영어로 입력하세요" onkeydown="handleKeyDown(event)">
+            <p id="result"></p>
+            <p id="score"></p>
+            <p id="timer"></p>
+            <button id="resetButton" style="display: none;" onclick="resetQuiz()">다시 시작</button>
+            <button id="retryButton" onclick="retryWrongAnswers()">오답만 모아서 풀기</button>
+            <button id="backButton" onclick="backToStart()">첫 화면으로 돌아가기</button>
+            <div id="wrong-answers"></div>
+            <button id="goBackButton" onclick="backToStart()">첫 화면으로 돌아가기</button>
+        </div>
+    </div>
+
+    <script>
+        // 각 과목별 문제 세트
+        const subjects = {
+            '성인실습퀴즈': [
+                { korean: '세기관지', english: 'bronchiole' },
+                { korean: '들숨, 흡기', english: 'inspiration' },
+                { korean: '비염', english: 'rhinitis' },
+                { korean: '기관지경', english: 'bronchoscope' },
+                { korean: '무호흡', english: 'apnea' },
+                { korean: '호흡곤란', english: 'dyspnea' },
+                { korean: '과다환기', english: 'hyperventilation' },
+                { korean: '저산소증', english: 'hypoxia' },
+                { korean: '천명음', english: 'wheezes' },
+                { korean: '천식', english: 'asthma' },
+                { korean: '무기폐', english: 'atelectasis' },
+                { korean: '만성폐쇄성 폐질환', english: 'chronic obstructive pulmonary disease' },
+                { korean: '폐렴', english: 'pneumonia' },
+                { korean: '결핵', english: 'tuberculosis' },
+                { korean: '복수', english: 'ascites' },
+                { korean: '탈수', english: 'dehydration' },
+                { korean: '설사', english: 'diarrhea' },
+                { korean: '삼킴곤란 연하곤란', english: 'dysphagia' },
+                { korean: '식도 정맥류', english: 'esophageal varix' },
+                { korean: '위궤양', english: 'gastric ulcer' },
+                { korean: '탈장', english: 'hernia' },
+                { korean: '간암', english: 'hepatoma' },
+                { korean: '간비대', english: 'hepatomegaly' },
+                { korean: '장폐쇄', english: 'ileus' },
+                { korean: '흑색변', english: 'melena' },
+                { korean: '소화성궤양', english: 'peptic ulcer' },
+                { korean: '천공 뚫림', english: 'perforation' },
+                { korean: '위세척', english: 'gastric lavage' },
+                { korean: '복강경검사', english: 'laparoscopy' },
+                { korean: '천자', english: 'paracentesis' },
+                { korean: '당뇨병', english: 'diabete mellitus' },
+                { korean: '갑상선 자극호르몬', english: 'Thyroid Stimulating Hormone' },
+                { korean: '혈뇨', english: 'hematuria' },
+                { korean: '다뇨증', english: 'polyuria' },
+                { korean: '양성 전립선 비대증', english: 'Benign Prostatic Hypertrophy' },
+                { korean: '동맥경화증', english: 'arteriosclerosis' },
+                { korean: '협심증', english: 'angina pectoris' },
+                { korean: '조동', english: 'flutter' },
+                { korean: '심장차단', english: 'heart block' },
+                { korean: '빈맥', english: 'tachycardia' },
+                { korean: '심방중격결손', english: 'atrial septal defect' },
+                { korean: '울혈심부전', english: 'congestive heart failure' },
+                { korean: '정맥류', english: 'varicose veins' },
+                { korean: '관상동맥질환', english: 'coronary artery disease' },
+                { korean: '하대정맥', english: 'inferior venae cava' },
+                { korean: '심근경색', english: 'myocardial infarction' },
+                { korean: '동맥관개존중', english: 'patent ductus arteriosus' },
+                { korean: '조기심실수축', english: 'premature ventricular contraction' },
+                { korean: '심실중격결손', english: 'ventricular septal defect' },
+                { korean: '심전도', english: 'electrocardiography' },
+            ],
+            '아동실습퀴즈': [
+                { korean: '부정', english: 'denial' },
+                { korean: '정동', english: 'affect' },
+                // 더 많은 문제 추가...
+            ],
+            '성인실습퀴즈2': [
+                { english: '세기관지', korean: 'bronchiole' },
+                { english: '들숨, 흡기', korean: 'inspiration' },
+                { english: '비염', korean: 'rhinitis' },
+                { english: '기관지경', korean: 'bronchoscope' },
+                { english: '무호흡', korean: 'apnea' },
+                { english: '호흡곤란', korean: 'dyspnea' },
+                { english: '과다환기', korean: 'hyperventilation' },
+                { english: '저산소증', korean: 'hypoxia' },
+                { english: '천명음', korean: 'wheezes' },
+                { english: '천식', korean: 'asthma' },
+                { english: '무기폐', korean: 'atelectasis' },
+                { english: '만성폐쇄성 폐질환', korean: 'chronic obstructive pulmonary disease' },
+                { english: '폐렴', korean: 'pneumonia' },
+                { english: '결핵', korean: 'tuberculosis' },
+                { english: '복수', korean: 'ascites' },
+                { english: '탈수', korean: 'dehydration' },
+                { english: '설사', korean: 'diarrhea' },
+                { english: '삼킴곤란', korean: 'dysphagia' },
+                { english: '식도 정맥류', korean: 'esophageal varix' },
+                { english: '위궤양', korean: 'gastric ulcer' },
+                { english: '탈장', korean: 'hernia' },
+                { english: '간암', korean: 'hepatoma' },
+                { english: '간비대', korean: 'hepatomegaly' },
+                { english: '장폐쇄', korean: 'ileus' },
+                { english: '흑색변', korean: 'melena' },
+                { english: '소화성궤양', korean: 'peptic ulcer' },
+                { english: '천공 뚫림', korean: 'perforation' },
+                { english: '위세척', korean: 'gastric lavage' },
+                { english: '복강경검사', korean: 'laparoscopy' },
+                { english: '천자', korean: 'paracentesis' },
+                { english: '당뇨병', korean: 'diabete mellitus' },
+                { english: '갑상선 자극호르몬', korean: 'Thyroid Stimulating Hormone' },
+                { english: '혈뇨', korean: 'hematuria' },
+                { english: '다뇨증', korean: 'polyuria' },
+                { english: '양성 전립선 비대증', korean: 'Benign Prostatic Hypertrophy' },
+                { english: '동맥경화증', korean: 'arteriosclerosis' },
+                { english: '협심증', korean: 'angina pectoris' },
+                { english: '조동', korean: 'flutter' },
+                { english: '심장차단', korean: 'heart block' },
+                { english: '빈맥', korean: 'tachycardia' },
+                { english: '심방중격결손', korean: 'atrial septal defect' },
+                { english: '울혈심부전', korean: 'congestive heart failure' },
+                { english: '정맥류', korean: 'varicose veins' },
+                { english: '관상동맥질환', korean: 'coronary artery disease' },
+                { english: '하대정맥', korean: 'inferior venae cava' },
+                { english: '심근경색', korean: 'myocardial infarction' },
+                { english: '동맥관개존중', korean: 'patent ductus arteriosus' },
+                { english: '조기심실수축', korean: 'premature ventricular contraction' },
+                { english: '심실중격결손', korean: 'ventricular septal defect' },
+                { english: '심전도', korean: 'electrocardiography' },
+            ],
+            '정신실습퀴즈': [
+            { korean: '의존', english: 'dependence' },
+            { korean: '중독', english: 'addiction' },
+            { korean: '망상', english: 'delusion' },
+            { korean: '행동화', english: 'acting out' },
+            { korean: '부정', english: 'denial' },
+            { korean: '섬망', english: 'delirium' },
+            { korean: '정동', english: 'affect' },
+            { korean: '기분', english: 'mood' },
+            { korean: '감정', english: 'emotion' },
+            { korean: '무감동', english: 'apathy' },
+            { korean: '지남력', english: 'orientation' },
+            { korean: '다행감', english: 'euphoria' },
+            { korean: '예민성', english: 'irritability' },
+            { korean: '우울', english: 'depression' },
+            { korean: '양가감정', english: 'ambivalence' },
+            { korean: '불안', english: 'anxiety' },
+            { korean: '공포', english: 'phobia' },
+            { korean: '초조', english: 'agitation' },
+            { korean: '상동증', english: 'stereotypy' },
+            { korean: '보속증', english: 'perseveration' },
+            { korean: '강직증', english: 'catalepsy' },
+            { korean: '강박행동', english: 'compulsion' },
+            { korean: '실인증', english: 'agnosia' },
+            { korean: '조증', english: 'manic' },
+            { korean: '환각', english: 'hallucination' },
+            { korean: '인지손상', english: 'cognitive impairment' },
+            { korean: '기억상실', english: 'amnesia' },
+            { korean: '알츠하이머 질환 중간에 점 빼고 답 작성요망', english: 'Alzheimers Disease' },
+            { korean: '일몰 증후군', english: 'sundown syndrome' },
+            { korean: '조현병', english: 'schizophrenia' },
+            { korean: '기분장애', english: 'mood disorders' },
+            { korean: '양극성장애', english: 'bipolar disorders' }
+            ]
+        };
+
+        let questionPool = [];
+        let currentTerm;
+        let score = 0;
+        let totalQuestions = 0;
+        let selectedQuestions = 0;
+        let timerInterval;
+        const timeLimit = 30 * 60 * 1000; // 30 minutes in milliseconds
+        let startTime;
+        let wrongAnswers = [];
+        let selectedSubject = '';
+        let questionNumber = 1;
+
+        // 랜덤으로 전체 문제에서 설정된 문제 수만큼 선택
+        function getRandomQuestions(arr, count) {
+            const shuffled = arr.slice().sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        function selectSubject(subject) {
+            selectedSubject = subject;
+            const questionCountInput = document.getElementById('questionCount').value;
+            selectedQuestions = parseInt(questionCountInput) || subjects[subject].length;
+            questionPool = getRandomQuestions(subjects[subject], selectedQuestions); // 설정된 문제 수만큼 랜덤으로 문제 선택
+            totalQuestions = questionPool.length;
+            document.getElementById('subject-title').textContent = subject;
+            startQuiz();
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function initializePool() {
+            score = 0;
+            wrongAnswers = [];
+            questionNumber = 1;
+            document.getElementById('resetButton').style.display = 'none';
+            document.getElementById('retryButton').style.display = 'none';
+            document.getElementById('wrong-answers').innerHTML = '';
+            document.getElementById('goBackButton').style.display = 'block';
+            showQuestion();
+        }
+
+        function startQuiz() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('quiz-screen').style.display = 'block';
+            startTime = Date.now();
+            initializePool();
+            startTimer();
+        }
+
+        function showQuestion() {
+            if (questionPool.length === 0) {
+                endQuiz();
+                return;
+            }
+
+            currentTerm = questionPool.pop();
+            document.getElementById('question').textContent = `이 한글(영어) 단어의 영어(한글)는 무엇인가요? '${currentTerm.korean}'`;
+            document.getElementById('questionNumber').textContent = `문제 ${questionNumber} / ${totalQuestions}`;
+            document.getElementById('answer').value = '';
+            document.getElementById('result').textContent = '';
+            questionNumber++;
+        }
+
+        function checkAnswer() {
+            const userAnswer = document.getElementById('answer').value.trim().replace(/\s+/g, ' ').toLowerCase();
+            const correctAnswer = currentTerm.english.trim().replace(/\s+/g, ' ').toLowerCase(); // 정답도 공백을 정리
+
+            const resultElement = document.getElementById('result');
+
+            if (userAnswer === '') {
+                resultElement.textContent = '정답을 입력하세요.';
+                resultElement.style.color = 'red';
+                return;
+            }
+
+            if (userAnswer === correctAnswer) {
+                resultElement.textContent = '정답입니다!';
+                resultElement.style.color = 'green';
+                score++;
+                setTimeout(showQuestion, 1000);
+            } else {
+                resultElement.textContent = `오답입니다. 정답은 ${correctAnswer} 입니다.`;
+                resultElement.style.color = 'red';
+                wrongAnswers.push(currentTerm);
+                setTimeout(showQuestion, 2000);
+            }
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                checkAnswer();
+            }
+        }
+
+        function startTimer() {
+            const timerElement = document.getElementById('timer');
+            timerInterval = setInterval(() => {
+                const elapsedTime = Date.now() - startTime;
+                const remainingTime = timeLimit - elapsedTime;
+                if (remainingTime <= 0) {
+                    clearInterval(timerInterval);
+                    endQuiz();
+                    return;
+                }
+                const minutes = Math.floor(remainingTime / (60 * 1000));
+                const seconds = Math.floor((remainingTime % (60 * 1000)) / 1000);
+                timerElement.textContent = `남은 시간: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            const percentage = Math.round((score / totalQuestions) * 100);
+            let message;
+            if (percentage <= 30) {
+                message = "공부를 다시 해야겠어요.";
+            } else if (percentage <= 60) {
+                message = "조금만 더 노력해볼까요?";
+            } else if (percentage < 100) {
+                message = "곧 다 맞출 수 있을거에요";
+            } else {
+                message = "완벽해요!!";
+            }
+            document.getElementById('question').textContent = `퀴즈 완료! 점수: ${score}/${totalQuestions} (${percentage}%)`;
+            document.getElementById('result').textContent = message;
+            document.getElementById('resetButton').style.display = 'block';
+            document.getElementById('backButton').style.display = 'block';
+
+            if (wrongAnswers.length > 0) {
+                const wrongAnswersElement = document.getElementById('wrong-answers');
+                wrongAnswersElement.innerHTML = '<h2>오답노트</h2>';
+                wrongAnswers.forEach(term => {
+                    wrongAnswersElement.innerHTML += `<p>${term.korean}: ${term.english}</p>`;
+                });
+                document.getElementById('retryButton').style.display = 'block';
+            }
+            document.getElementById('goBackButton').style.display = 'none';
+        }
+
+        function retryWrongAnswers() {
+            if (wrongAnswers.length === 0) return;
+
+            questionPool = [...wrongAnswers];
+            shuffle(questionPool);
+            wrongAnswers = [];
+            score = 0;
+            document.getElementById('retryButton').style.display = 'none';
+            document.getElementById('wrong-answers').innerHTML = '';
+            initializePool();
+        }
+
+        function resetQuiz() {
+            questionPool = getRandomQuestions(subjects[selectedSubject], selectedQuestions); // 다시 랜덤으로 문제 선택
+            totalQuestions = questionPool.length;
+            startTime = Date.now();
+            initializePool();
+            startTimer();
+            document.getElementById('backButton').style.display = 'none';
+        }
+
+        function backToStart() {
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('start-screen').style.display = 'block';
+            document.getElementById('resetButton').style.display = 'none';
+            document.getElementById('backButton').style.display = 'none';
+            document.getElementById('retryButton').style.display = 'none';
+            document.getElementById('wrong-answers').innerHTML = '';
+            document.getElementById('goBackButton').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
