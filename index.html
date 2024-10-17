@@ -73,8 +73,8 @@
             <label for="questionCount">풀 문제 수 선택:</label>
             <input type="range" id="questionCount" min="1" max="100" value="10" oninput="document.getElementById('rangeValue').textContent = this.value">
             <p>선택한 문제 수: <span id="rangeValue">10</span></p>
-            <button onclick="selectSubject('성인실습퀴즈')">성인실습퀴즈(50문제)</button>
-            <button onclick="selectSubject('성인실습퀴즈2')">성인실습퀴즈(한영변경)</button>
+            <button onclick="selectSubject('성인실습퀴즈')">성인실습퀴즈4조(50문제)</button>
+            <button onclick="selectSubject('성인실습퀴즈2')">성인실습퀴즈4조(한영변경)</button>
             <button onclick="selectSubject('아동실습퀴즈')">아동실습퀴즈(123문제)</button>
             <button onclick="selectSubject('아동실습퀴즈2')">아동실습퀴즈(한영변경)</button>
             <button onclick="selectSubject('정신실습퀴즈')">정신실습퀴즈(32문제)</button>
@@ -100,12 +100,12 @@
         const subjects = {
             '성인실습퀴즈': [
                 { korean: '세기관지', english: 'bronchiole' },
-                { korean: '들숨, 흡기', english: 'inspiration' },
-                { korean: '비염', english: 'rhinitis' },
+                { korean: '날숨, 호기', english: 'exspiration' },
+                { korean: '기관지염', english: 'bronchitis' },
                 { korean: '기관지경', english: 'bronchoscope' },
                 { korean: '무호흡', english: 'apnea' },
                 { korean: '호흡곤란', english: 'dyspnea' },
-                { korean: '과다환기', english: 'hyperventilation' },
+                { korean: '과소환기', english: 'hypoventilation' },
                 { korean: '저산소증', english: 'hypoxia' },
                 { korean: '천명음', english: 'wheezes' },
                 { korean: '천식', english: 'asthma' },
@@ -115,7 +115,7 @@
                 { korean: '결핵', english: 'tuberculosis' },
                 { korean: '복수', english: 'ascites' },
                 { korean: '탈수', english: 'dehydration' },
-                { korean: '설사', english: 'diarrhea' },
+                { korean: '기흉', english: 'pneumothorax' },
                 { korean: '삼킴곤란 연하곤란', english: 'dysphagia' },
                 { korean: '식도 정맥류', english: 'esophageal varix' },
                 { korean: '위궤양', english: 'gastric ulcer' },
@@ -137,18 +137,18 @@
                 { korean: '동맥경화증', english: 'arteriosclerosis' },
                 { korean: '협심증', english: 'angina pectoris' },
                 { korean: '조동', english: 'flutter' },
-                { korean: '심장차단', english: 'heart block' },
+                { korean: '협착증', english: 'angina pectoris' },
                 { korean: '빈맥', english: 'tachycardia' },
                 { korean: '심방중격결손', english: 'atrial septal defect' },
                 { korean: '울혈심부전', english: 'congestive heart failure' },
-                { korean: '정맥류', english: 'varicose veins' },
+                { korean: '세동', english: 'fibrilation' },
                 { korean: '관상동맥질환', english: 'coronary artery disease' },
                 { korean: '하대정맥', english: 'inferior venae cava' },
                 { korean: '심근경색', english: 'myocardial infarction' },
                 { korean: '동맥관개존중', english: 'patent ductus arteriosus' },
                 { korean: '조기심실수축', english: 'premature ventricular contraction' },
-                { korean: '심실중격결손', english: 'ventricular septal defect' },
-                { korean: '심전도', english: 'electrocardiography' },
+                { korean: '심방중격결손', english: 'atrial septal defect' },
+                { korean: '심장초음파', english: 'echocardiography' },
             ],
             '아동실습퀴즈': [
                 { korean: '신경성 식욕부진', english: 'anorexia nervosa' },
