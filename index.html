@@ -62,6 +62,12 @@
         #backButton, #goBackButton {
             background-color: #f44336;
         }
+	.quiz-term {
+    font-size: 36px;
+    font-weight: bold;
+    color: #222;
+}
+
     </style>
 </head>
 <body>
@@ -571,7 +577,8 @@
             }
 
             currentTerm = questionPool.pop();
-            document.getElementById('question').textContent = `이 한글(영어) 단어의 영어(한글)는 무엇인가요? '${currentTerm.korean}'`;
+            document.getElementById('question').innerHTML =
+  `이 한글(영어) 단어의 영어(한글)는 무엇인가요? <span class="quiz-term">${currentTerm.korean}</span>`;
             document.getElementById('questionNumber').textContent = `문제 ${questionNumber} / ${totalQuestions}`;
             document.getElementById('answer').value = '';
             document.getElementById('result').textContent = '';
