@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>이태형의 우당탕탕 의학용어 퀴즈 2025년도 4학년 1학기 버전</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 10px;
+            background-color: #f9f9f9;
+            line-height: 1.6;
+        }
+        #quiz-container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input[type="text"], input[type="range"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            margin-top: 10px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:active {
+            background-color: #45a049;
+        }
+        #result, #score, #timer, #questionNumber {
+            margin-top: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+        #wrong-answers {
+            margin-top: 20px;
+        }
+        #retryButton, #backButton, #goBackButton {
+            display: none;
+            margin-top: 10px;
+            font-size: 18px;
+            padding: 15px;
+            cursor: pointer;
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        #backButton, #goBackButton {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <div id="start-screen">
+            <h1>이태형의 우당탕탕 의학용어 퀴즈</h1>
+		<p>2024년도 3학년 2학기 ver</p>
+		<p>철자가 틀린 문제가 있으면 알려주시면 수정하겠습니다. 모두 퀴즈 만점 받으세요.</p>
+            <label for="questionCount">풀 문제 수 선택:</label>
+            <input type="range" id="questionCount" min="1" max="100" value="10" oninput="document.getElementById('rangeValue').textContent = this.value">
+            <p>선택한 문제 수: <span id="rangeValue">10</span></p>
+            <button onclick="selectSubject('성인실습퀴즈')">성인실습퀴즈4조(50문제)</button>
+            <button onclick="selectSubject('성인실습퀴즈2')">성인실습퀴즈4조(한영변경)</button>
+            <button onclick="selectSubject('아동실습퀴즈')">아동실습퀴즈(123문제)</button>
+            <button onclick="selectSubject('아동실습퀴즈2')">아동실습퀴즈(한영변경)</button>
+            <button onclick="selectSubject('정신실습퀴즈')">정신실습퀴즈(32문제)</button>
+        </div>
+        <div id="quiz-screen" style="display: none;">
+            <h1 id="subject-title">의학용어 퀴즈</h1>
+            <p id="questionNumber"></p> <!-- 문제 번호 표시 -->
+            <p id="question">여기서 문제는 랜덤으로 나오게 됩니다.</p>
+            <input type="text" id="answer" placeholder="여기에 영어로 입력하세요" onkeydown="handleKeyDown(event)">
+            <p id="result"></p>
+            <p id="score"></p>
+            <p id="timer"></p>
+            <button id="resetButton" style="display: none;" onclick="resetQuiz()">다시 시작</button>
+            <button id="retryButton" onclick="retryWrongAnswers()">오답만 모아서 풀기</button>
+            <button id="backButton" onclick="backToStart()">첫 화면으로 돌아가기</button>
+            <div id="wrong-answers"></div>
+            <button id="goBackButton" onclick="backToStart()">첫 화면으로 돌아가기</button>
+        </div>
+    </div>
+
+    <script>
+        // 각 과목별 문제 세트
+        const subjects = {
+            '성인실습퀴즈': [
+                { korean: '세기관지', english: 'bronchiole' },
+                { korean: '날숨, 호기', english: 'exspiration' },
+                { korean: '기관지염', english: 'bronchitis' },
+                { korean: '기관지경', english: 'bronchoscope' },
+                { korean: '무호흡', english: 'apnea' },
+                { korean: '호흡곤란', english: 'dyspnea' },
+                { korean: '과소환기', english: 'hypoventilation' },
+                { korean: '저산소증', english: 'hypoxia' },
+                { korean: '천명음', english: 'wheezes' },
+                { korean: '천식', english: 'asthma' },
+                { korean: '무기폐', english: 'atelectasis' },
+                { korean: '만성폐쇄성 폐질환', english: 'chronic obstructive pulmonary disease' },
+                { korean: '폐렴', english: 'pneumonia' },
+                { korean: '결핵', english: 'tuberculosis' },
+                { korean: '복수', english: 'ascites' },
+                { korean: '탈수', english: 'dehydration' },
+                { korean: '기흉', english: 'pneumothorax' },
+                { korean: '삼킴곤란 연하곤란', english: 'dysphagia' },
+                { korean: '식도 정맥류', english: 'esophageal varix' },
+                { korean: '위궤양', english: 'gastric ulcer' },
+                { korean: '탈장', english: 'hernia' },
+                { korean: '간암', english: 'hepatoma' },
+                { korean: '간비대', english: 'hepatomegaly' },
+                { korean: '장폐쇄', english: 'ileus' },
+                { korean: '흑색변', english: 'melena' },
+                { korean: '소화성궤양', english: 'peptic ulcer' },
+                { korean: '천공 뚫림', english: 'perforation' },
+                { korean: '위세척', english: 'gastric lavage' },
+                { korean: '복강경검사', english: 'laparoscopy' },
+                { korean: '천자', english: 'paracentesis' },
+                { korean: '당뇨병', english: 'diabete mellitus' },
+                { korean: '갑상선 자극호르몬', english: 'Thyroid Stimulating Hormone' },
+                { korean: '혈뇨', english: 'hematuria' },
+                { korean: '다뇨증', english: 'polyuria' },
+                { korean: '양성 전립선 비대증', english: 'Benign Prostatic Hypertrophy' },
+                { korean: '동맥경화증', english: 'arteriosclerosis' },
+                { korean: '협심증', english: 'angina pectoris' },
+                { korean: '조동', english: 'flutter' },
+                { korean: '협착증', english: 'angina pectoris' },
+                { korean: '빈맥', english: 'tachycardia' },
+                { korean: '심방중격결손', english: 'atrial septal defect' },
+                { korean: '울혈심부전', english: 'congestive heart failure' },
+                { korean: '세동', english: 'fibrilation' },
+                { korean: '관상동맥질환', english: 'coronary artery disease' },
+                { korean: '하대정맥', english: 'inferior venae cava' },
+                { korean: '심근경색', english: 'myocardial infarction' },
+                { korean: '동맥관개존중', english: 'patent ductus arteriosus' },
+                { korean: '조기심실수축', english: 'premature ventricular contraction' },
+                { korean: '심방중격결손', english: 'atrial septal defect' },
+                { korean: '심장초음파', english: 'echocardiography' },
+            ],
+            '아동실습퀴즈': [
+                { korean: '신경성 식욕부진', english: 'anorexia nervosa' },
+                { korean: '재생불량성 빈혈', english: 'aplastic anemia' },
+                { korean: '충수염', english: 'appendicitis' },
+                { korean: '질식', english: 'asphyxia' },
+                { korean: '천식', english: 'asthma' },
+                { korean: '무기폐', english: 'atelectasis' },
+                { korean: '아토피성 피부염', english: 'atopic dermatitis' },
+                { korean: '각기병', english: 'beriberi' },
+                { korean: '담도 폐쇄증', english: 'biliary atresia' },
+                { korean: '세기관지염', english: 'bronchiolitis' },
+                { korean: '기관지염', english: 'bronchitis' },
+                { korean: '칸디다증', english: 'candidiasis' },
+                { korean: '봉와직염', english: 'cellulitis' },
+                { korean: '뇌성마비', english: 'cerebral palsy' },
+                { korean: '수두', english: 'chicken pox' },
+                { korean: '구순열&구개열', english: 'cleft lip & palate' },
+                { korean: '대장염', english: 'colitis' },
+                { korean: '경련', english: 'convulsion' },
+                { korean: '크룹', english: 'croup' },
+                { korean: '잠복고환', english: 'cryptorchism' },
+                { korean: '방광염', english: 'cystitis' },
+                { korean: '신성 요붕증', english: 'diabetes inspidus' },
+                { korean: '당뇨', english: 'diabetes mellitus' },
+                { korean: '기저귀 발진', english: 'diaper rash' },
+                { korean: '설사', english: 'diarrhea' },
+                { korean: '디프테리아', english: 'diphtheria' },
+                { korean: '다운증후군', english: 'downs syyndrome' },
+                { korean: '듀시엔형 근이영양증', english: 'duchenne muscular dystrophy' },
+                { korean: '이질', english: 'dysentery' },
+                { korean: '삼킴곤란', english: 'dysphagia' },
+                { korean: '습진', english: 'eczema' },
+                { korean: '왜소증', english: 'dwarfism' },
+                { korean: '에드워드 증후군', english: 'edward syndrome' },
+                { korean: '후두개염', english: 'epiglottitis' },
+                { korean: '뇌전증', english: 'epilepsy' },
+                { korean: '코피', english: 'epistaxis' },
+                { korean: '적혈모구증', english: 'erythroblastosis' },
+                { korean: '식도폐쇄증', english: 'esophageal atresia' },
+                { korean: '밀어내기 반사', english: 'extrusion reflex' },
+                { korean: '안면신경 마비', english: 'facial nerve paralysis' },
+                { korean: '열성경련', english: 'febrile convulsion' },
+                { korean: '태아 알코올 증후군', english: 'fetal alcohol syndrome' },
+                { korean: '위장염', english: 'gastroenteritis' },
+                { korean: '풍진', english: 'german measles' },
+                { korean: '사구체신염', english: 'glomerulonephritis' },
+                { korean: '임질', english: 'gonorrhea' },
+                { korean: '혈우병', english: 'hemophilia' },
+                { korean: '간염', english: 'hepatitis' },
+                { korean: '선천성 거대결장증', english: 'hirschsprungs disease' },
+                { korean: '유리질막병', english: 'hyaline membrane disease' },
+                { korean: '음낭수종', english: 'hydrocele' },
+                { korean: '수두증', english: 'hydrocephalus' },
+                { korean: '태아수종', english: 'hydrops fetalis' },
+                { korean: '저체온증', english: 'hypothermia' },
+                { korean: '고빌리루빈혈증', english: 'hyperbilirubinemia' },
+                { korean: '고혈당', english: 'hyperglycemia' },
+                { korean: '고혈압', english: 'hypertension' },
+                { korean: '고체온', english: 'hyperthermia' },
+                { korean: '요도하열', english: 'hypospadias' },
+                { korean: '항문폐쇄증', english: 'imperforated anus' },
+                { korean: '농가진', english: 'impetigo' },
+                { korean: '영아근막연축', english: 'infantile myoclonic spasm' },
+                { korean: '서혜부 탈장', english: 'inguinal hernia' },
+                { korean: '피부스침증', english: 'intertrigo' },
+                { korean: '장중첩증', english: 'intussusception' },
+                { korean: '가와사키병', english: 'Kawasaki disease' },
+                { korean: '핵황달', english: 'kernicterus' },
+                { korean: '단백열량부족증', english: 'kwashiorkor' },
+                { korean: '척추추만증', english: 'kyphosis' },
+                { korean: '후두천명', english: 'laryngeal stridor' },
+                { korean: '후두염', english: 'laryngitis' },
+                { korean: '백혈병', english: 'leukemia' },
+                { korean: '척추전만증', english: 'lordosis' },
+                { korean: '홍역', english: 'measles' },
+                { korean: '태변흡입증후군', english: 'meconium aspiration syndrome' },
+                { korean: '수막염', english: 'meningitis' },
+                { korean: '수막탈출증', english: 'meningocele' },
+                { korean: '수막척수탈출증', english: 'meningomyelocele' },
+                { korean: '정신지체', english: 'mental retardation' },
+                { korean: '경미뇌기능장애', english: 'minimal brain dysfunction' },
+                { korean: '점액림프절증후군', english: 'mucocutaneous lymphnode syndrome' },
+                { korean: '볼거리', english: 'mumps' },
+                { korean: '괴사성상염', english: 'necrotizing enterocolitis' },
+                { korean: '신염', english: 'nephritis' },
+                { korean: '신증후군', english: 'nephrotic syndrome' },
+                { korean: '신경모세포종', english: 'neuroblastoma' },
+                { korean: '배꼽탈상', english: 'omphalocelia' },
+                { korean: '골수염', english: 'osteomyelitis' },
+                { korean: '골육종', english: 'osteosarcoma' },
+                { korean: '중이염', english: 'otitis media' },
+                { korean: '백일해', english: 'pertussis' },
+                { korean: '복막염', english: 'peritonitis' },
+                { korean: '출혈점', english: 'petechia' },
+                { korean: '페닐케톤뇨증', english: 'phenylketonuria' },
+                { korean: '폐렴', english: 'pneumonia' },
+                { korean: '회백질척수염', english: 'poliomyelitis' },
+                { korean: '다음중', english: 'polydipsia' },
+                { korean: '다식증', english: 'polyphagia' },
+                { korean: '자반병', english: 'purpura' },
+                { korean: '망막모세포종', english: 'retinoblastoma' },
+                { korean: '미숙아 망막증', english: 'retinopathy of prematurity' },
+                { korean: '수정체뒤섬유증식', english: 'retrolental fibroplasia' },
+                { korean: '류마티스열', english: 'rheumatic fever' },
+                { korean: '풍진', english: 'rubella' },
+                { korean: '홍역', english: 'rubeola' },
+                { korean: '성홍열', english: 'scarlet fever' },
+                { korean: '척추측만증', english: 'scoliosis' },
+                { korean: '괴혈병', english: 'scurvy' },
+                { korean: '발작', english: 'seizure' },
+                { korean: '이질균', english: 'shigella' },
+                { korean: '겸상적혈구빈혈', english: 'sickle cell anemia' },
+                { korean: '천연두', english: 'small pox' },
+                { korean: '잠재성 이분척추', english: 'spina bifida occult' },
+                { korean: '사시', english: 'strabismus' },
+                { korean: '지중해빈혈', english: 'thalassemia' },
+                { korean: '편도염', english: 'tonsillitis' },
+                { korean: '신생아 사경', english: 'torticollis' },
+                { korean: '톡소플라스마증', english: 'toxoplasmosis' },
+                { korean: '배꼽탈장', english: 'umbilical hernia' },
+                { korean: '두드러기', english: 'urticaria' },
+                { korean: '수두', english: 'varicella zoster' },
+                { korean: '윌름스 종양', english: 'Wilms tumor' },
+                { korean: '사경', english: 'wry neck' },
+            ],
+            '아동실습퀴즈2': [
+                { english: '신경성 식욕부진', korean: 'anorexia nervosa' },
+                { english: '재생불량성 빈혈', korean: 'aplastic anemia' },
+                { english: '충수염', korean: 'appendicitis' },
+                { english: '질식', korean: 'asphyxia' },
+                { english: '천식', korean: 'asthma' },
+                { english: '무기폐', korean: 'atelectasis' },
+                { english: '아토피성 피부염', korean: 'atopic dermatitis' },
+                { english: '각기병', korean: 'beriberi' },
+                { english: '담도 폐쇄증', korean: 'biliary atresia' },
+                { english: '세기관지염', korean: 'bronchiolitis' },
+                { english: '기관지염', korean: 'bronchitis' },
+                { english: '칸디다증', korean: 'candidiasis' },
+                { english: '봉와직염', korean: 'cellulitis' },
+                { english: '뇌성마비', korean: 'cerebral palsy' },
+                { english: '수두', korean: 'chicken pox' },
+                { english: '구순열&구개열', korean: 'cleft lip & palate' },
+                { english: '대장염', korean: 'colitis' },
+                { english: '경련', korean: 'convulsion' },
+                { english: '크룹', korean: 'croup' },
+                { english: '잠복고환', korean: 'cryptorchism' },
+                { english: '방광염', korean: 'cystitis' },
+                { english: '신성 요붕증', korean: 'diabetes inspidus' },
+                { english: '당뇨', korean: 'diabetes mellitus' },
+                { english: '기저귀 발진', korean: 'diaper rash' },
+                { english: '설사', korean: 'diarrhea' },
+                { english: '디프테리아', korean: 'diphtheria' },
+                { english: '다운증후군', korean: 'downs syyndrome' },
+                { english: '듀시엔형 근이영양증', korean: 'duchenne muscular dystrophy' },
+                { english: '이질', korean: 'dysentery' },
+                { english: '삼킴곤란', korean: 'dysphagia' },
+                { english: '습진', korean: 'eczema' },
+                { english: '왜소증', korean: 'dwarfism' },
+                { english: '에드워드 증후군', korean: 'edward syndrome' },
+                { english: '후두개염', korean: 'epiglottitis' },
+                { english: '뇌전증', korean: 'epilepsy' },
+                { english: '코피', korean: 'epistaxis' },
+                { english: '적혈모구증', korean: 'erythroblastosis' },
+                { english: '식도폐쇄증', korean: 'esophageal atresia' },
+                { english: '밀어내기 반사', korean: 'extrusion reflex' },
+                { english: '안면신경 마비', korean: 'facial nerve paralysis' },
+                { english: '열성경련', korean: 'febrile convulsion' },
+                { english: '태아 알코올 증후군', korean: 'fetal alcohol syndrome' },
+                { english: '위장염', korean: 'gastroenteritis' },
+                { english: '풍진', korean: 'german measles' },
+                { english: '사구체신염', korean: 'glomerulonephritis' },
+                { english: '임질', korean: 'gonorrhea' },
+                { english: '혈우병', korean: 'hemophilia' },
+                { english: '간염', korean: 'hepatitis' },
+                { english: '선천성 거대결장증', korean: 'hirschsprungs disease' },
+                { english: '유리질막병', korean: 'hyaline membrane disease' },
+                { english: '음낭수종', korean: 'hydrocele' },
+                { english: '수두증', korean: 'hydrocephalus' },
+                { english: '태아수종', korean: 'hydrops fetalis' },
+                { english: '저체온증', korean: 'hypothermia' },
+                { english: '고빌리루빈혈증', korean: 'hyperbilirubinemia' },
+                { english: '고혈당', korean: 'hyperglycemia' },
+                { english: '고혈압', korean: 'hypertension' },
+                { english: '고체온', korean: 'hyperthermia' },
+                { english: '요도하열', korean: 'hypospadias' },
+                { english: '항문폐쇄증', korean: 'imperforated anus' },
+                { english: '농가진', korean: 'impetigo' },
+                { english: '영아근막연축', korean: 'infantile myoclonic spasm' },
+                { english: '서혜부 탈장', korean: 'inguinal hernia' },
+                { english: '피부스침증', korean: 'intertrigo' },
+                { english: '장중첩증', korean: 'intussusception' },
+                { english: '가와사키병', korean: 'Kawasaki disease' },
+                { english: '핵황달', korean: 'kernicterus' },
+                { english: '단백열량부족증', korean: 'kwashiorkor' },
+                { english: '척추추만증', korean: 'kyphosis' },
+                { english: '후두천명', korean: 'laryngeal stridor' },
+                { english: '후두염', korean: 'laryngitis' },
+                { english: '백혈병', korean: 'leukemia' },
+                { english: '척추전만증', korean: 'lordosis' },
+                { english: '홍역', korean: 'measles' },
+                { english: '태변흡입증후군', korean: 'meconium aspiration syndrome' },
+                { english: '수막염', korean: 'meningitis' },
+                { english: '수막탈출증', korean: 'meningocele' },
+                { english: '수막척수탈출증', korean: 'meningomyelocele' },
+                { english: '정신지체', korean: 'mental retardation' },
+                { english: '경미뇌기능장애', korean: 'minimal brain dysfunction' },
+                { english: '점액림프절증후군', korean: 'mucocutaneous lymphnode syndrome' },
+                { english: '볼거리', korean: 'mumps' },
+                { english: '괴사성상염', korean: 'necrotizing enterocolitis' },
+                { english: '신염', korean: 'nephritis' },
+                { english: '신증후군', korean: 'nephrotic syndrome' },
+                { english: '신경모세포종', korean: 'neuroblastoma' },
+                { english: '배꼽탈상', korean: 'omphalocelia' },
+                { english: '골수염', korean: 'osteomyelitis' },
+                { english: '골육종', korean: 'osteosarcoma' },
+                { english: '중이염', korean: 'otitis media' },
+                { english: '백일해', korean: 'pertussis' },
+                { english: '복막염', korean: 'peritonitis' },
+                { english: '출혈점', korean: 'petechia' },
+                { english: '페닐케톤뇨증', korean: 'phenylketonuria' },
+                { english: '폐렴', korean: 'pneumonia' },
+                { english: '회백질척수염', korean: 'poliomyelitis' },
+                { english: '다음중', korean: 'polydipsia' },
+                { english: '다식증', korean: 'polyphagia' },
+                { english: '자반병', korean: 'purpura' },
+                { english: '망막모세포종', korean: 'retinoblastoma' },
+                { english: '미숙아 망막증', korean: 'retinopathy of prematurity' },
+                { english: '수정체뒤섬유증식', korean: 'retrolental fibroplasia' },
+                { english: '류마티스열', korean: 'rheumatic fever' },
+                { english: '풍진', korean: 'rubella' },
+                { english: '홍역', korean: 'rubeola' },
+                { english: '성홍열', korean: 'scarlet fever' },
+                { english: '척추측만증', korean: 'scoliosis' },
+                { english: '괴혈병', korean: 'scurvy' },
+                { english: '발작', korean: 'seizure' },
+                { english: '이질균', korean: 'shigella' },
+                { english: '겸상적혈구빈혈', korean: 'sickle cell anemia' },
+                { english: '천연두', korean: 'small pox' },
+                { english: '잠재성 이분척추', korean: 'spina bifida occult' },
+                { english: '사시', korean: 'strabismus' },
+                { english: '지중해빈혈', korean: 'thalassemia' },
+                { english: '편도염', korean: 'tonsillitis' },
+                { english: '신생아 사경', korean: 'torticollis' },
+                { english: '톡소플라스마증', korean: 'toxoplasmosis' },
+                { english: '배꼽탈장', korean: 'umbilical hernia' },
+                { english: '두드러기', korean: 'urticaria' },
+                { english: '수두', korean: 'varicella zoster' },
+                { english: '윌름스 종양', korean: 'Wilms tumor' },
+                { english: '사경', korean: 'wry neck' },
+            ],
+            '성인실습퀴즈2': [
+                { english: '세기관지', korean: 'bronchiole' },
+                { english: '들숨, 흡기', korean: 'inspiration' },
+                { english: '비염', korean: 'rhinitis' },
+                { english: '기관지경', korean: 'bronchoscope' },
+                { english: '무호흡', korean: 'apnea' },
+                { english: '호흡곤란', korean: 'dyspnea' },
+                { english: '과다환기', korean: 'hyperventilation' },
+                { english: '저산소증', korean: 'hypoxia' },
+                { english: '천명음', korean: 'wheezes' },
+                { english: '천식', korean: 'asthma' },
+                { english: '무기폐', korean: 'atelectasis' },
+                { english: '만성폐쇄성 폐질환', korean: 'chronic obstructive pulmonary disease' },
+                { english: '폐렴', korean: 'pneumonia' },
+                { english: '결핵', korean: 'tuberculosis' },
+                { english: '복수', korean: 'ascites' },
+                { english: '탈수', korean: 'dehydration' },
+                { english: '설사', korean: 'diarrhea' },
+                { english: '삼킴곤란', korean: 'dysphagia' },
+                { english: '식도 정맥류', korean: 'esophageal varix' },
+                { english: '위궤양', korean: 'gastric ulcer' },
+                { english: '탈장', korean: 'hernia' },
+                { english: '간암', korean: 'hepatoma' },
+                { english: '간비대', korean: 'hepatomegaly' },
+                { english: '장폐쇄', korean: 'ileus' },
+                { english: '흑색변', korean: 'melena' },
+                { english: '소화성궤양', korean: 'peptic ulcer' },
+                { english: '천공 뚫림', korean: 'perforation' },
+                { english: '위세척', korean: 'gastric lavage' },
+                { english: '복강경검사', korean: 'laparoscopy' },
+                { english: '천자', korean: 'paracentesis' },
+                { english: '당뇨병', korean: 'diabete mellitus' },
+                { english: '갑상선 자극호르몬', korean: 'Thyroid Stimulating Hormone' },
+                { english: '혈뇨', korean: 'hematuria' },
+                { english: '다뇨증', korean: 'polyuria' },
+                { english: '양성 전립선 비대증', korean: 'Benign Prostatic Hypertrophy' },
+                { english: '동맥경화증', korean: 'arteriosclerosis' },
+                { english: '협심증', korean: 'angina pectoris' },
+                { english: '조동', korean: 'flutter' },
+                { english: '심장차단', korean: 'heart block' },
+                { english: '빈맥', korean: 'tachycardia' },
+                { english: '심방중격결손', korean: 'atrial septal defect' },
+                { english: '울혈심부전', korean: 'congestive heart failure' },
+                { english: '정맥류', korean: 'varicose veins' },
+                { english: '관상동맥질환', korean: 'coronary artery disease' },
+                { english: '하대정맥', korean: 'inferior venae cava' },
+                { english: '심근경색', korean: 'myocardial infarction' },
+                { english: '동맥관개존중', korean: 'patent ductus arteriosus' },
+                { english: '조기심실수축', korean: 'premature ventricular contraction' },
+                { english: '심실중격결손', korean: 'ventricular septal defect' },
+                { english: '심전도', korean: 'electrocardiography' },
+            ],
+            '정신실습퀴즈': [
+            { korean: '억압', english: 'repression' },
+            { korean: '취소', english: 'undoing' },
+            { korean: '동일화', english: 'identification' },
+            { korean: '전치', english: 'displacement' },
+            { korean: '보상', english: 'compensation' },
+            { korean: '합리화', english: 'rationalization' },
+            { korean: '퇴행', english: 'regression' },
+            { korean: '억제', english: 'suppression' },
+            { korean: '반동형성', english: 'reaction formation' },
+            { korean: '투사', english: 'projection' },
+            { korean: '부정', english: 'denial' },
+            { korean: '격리', english: 'isolation' },
+            { korean: '지식화', english: 'intellectualization' },
+            { korean: '전환', english: 'conversion' },
+            { korean: '분리', english: 'splitting' },
+            { korean: '해리', english: 'dissociation' },
+            { korean: '지각', english: 'perception' },
+            { korean: '착각', english: 'illusion' },
+            { korean: '환청', english: 'auditory hallucination' },
+            { korean: '환촉', english: 'tactile hallucination' },
+            { korean: '환시', english: 'visual hallucination' },
+            { korean: '고양감, 의기양양', english: 'elation' },
+            { korean: '다행감', english: 'euphoria' },
+            { korean: '기고만장', english: 'exaltation' },
+            { korean: '무쾌감', english: 'anhedonia' },
+            { korean: '정동둔마', english: 'affective blunting' },
+            { korean: '양가감정', english: 'ambivalence' },
+            { korean: '정신운동 지연', english: 'psychomotor retardation' },
+            { korean: '사고비약', english: 'flight of idea' },
+            { korean: '연상이완', english: 'loosening of association' },
+            { korean: '우원증', english: 'circumstantiality' },
+            { korean: '지리멸렬', english: 'incoherence' },
+            { korean: '보속증', english: 'perseveration' },
+            { korean: '음송증', english: 'verbigeration' },
+            { korean: '작화증', english: 'confabulation' },
+            { korean: '피해망상', english: 'persecutory delusion' },
+            { korean: '과대망상', english: 'grandiose delusion' },
+            { korean: '근긴장증', english: 'dystonia' },
+            { korean: '상동증', english: 'stereotypy' },
+            { korean: '강직증', english: 'catalepsy' },
+            { korean: '거부증', english: 'negativism' },
+            { korean: '함구증', english: 'mutism' },
+            { korean: '정좌불능', english: 'akathisia' },
+            { korean: '신체화', english: 'somatization' },
+            { korean: '신경성 대식증', english: 'bulimia nervosa' },
+            { korean: '신경성 식욕부진증', english: 'anorexia nervosa' },
+            { korean: '공황', english: 'panic' },
+            { korean: '조현병', english: 'schizophrenia' },
+            { korean: '불면', english: 'insomnia' },
+            { korean: '정신지체', english: 'mental retardation' },
+            { korean: '강박장애', english: 'obsessive compulsive disorder' },
+            { korean: '강박사고', english: 'obsession' },
+            { korean: '강박행동', english: 'compulsion' },
+            { korean: '건강염려증', english: 'hypochondriasis' }
+            ]
+        };
+
+        let questionPool = [];
+        let currentTerm;
+        let score = 0;
+        let totalQuestions = 0;
+        let selectedQuestions = 0;
+        let timerInterval;
+        const timeLimit = 30 * 60 * 1000; // 30 minutes in milliseconds
+        let startTime;
+        let wrongAnswers = [];
+        let selectedSubject = '';
+        let questionNumber = 1;
+
+        // 랜덤으로 전체 문제에서 설정된 문제 수만큼 선택
+        function getRandomQuestions(arr, count) {
+            const shuffled = arr.slice().sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        function selectSubject(subject) {
+            selectedSubject = subject;
+            const questionCountInput = document.getElementById('questionCount').value;
+            selectedQuestions = parseInt(questionCountInput) || subjects[subject].length;
+            questionPool = getRandomQuestions(subjects[subject], selectedQuestions); // 설정된 문제 수만큼 랜덤으로 문제 선택
+            totalQuestions = questionPool.length;
+            document.getElementById('subject-title').textContent = subject;
+            startQuiz();
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function initializePool() {
+            score = 0;
+            wrongAnswers = [];
+            questionNumber = 1;
+            document.getElementById('resetButton').style.display = 'none';
+            document.getElementById('retryButton').style.display = 'none';
+            document.getElementById('wrong-answers').innerHTML = '';
+            document.getElementById('goBackButton').style.display = 'block';
+            showQuestion();
+        }
+
+        function startQuiz() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('quiz-screen').style.display = 'block';
+            startTime = Date.now();
+            initializePool();
+            startTimer();
+        }
+
+        function showQuestion() {
+            if (questionPool.length === 0) {
+                endQuiz();
+                return;
+            }
+
+            currentTerm = questionPool.pop();
+            document.getElementById('question').textContent = `이 한글(영어) 단어의 영어(한글)는 무엇인가요? '${currentTerm.korean}'`;
+            document.getElementById('questionNumber').textContent = `문제 ${questionNumber} / ${totalQuestions}`;
+            document.getElementById('answer').value = '';
+            document.getElementById('result').textContent = '';
+            questionNumber++;
+        }
+
+        function checkAnswer() {
+            const userAnswer = document.getElementById('answer').value.trim().replace(/\s+/g, ' ').toLowerCase();
+            const correctAnswer = currentTerm.english.trim().replace(/\s+/g, ' ').toLowerCase(); // 정답도 공백을 정리
+
+            const resultElement = document.getElementById('result');
+
+            if (userAnswer === '') {
+                resultElement.textContent = '정답을 입력하세요.';
+                resultElement.style.color = 'red';
+                return;
+            }
+
+            if (userAnswer === correctAnswer) {
+                resultElement.textContent = '정답입니다!';
+                resultElement.style.color = 'green';
+                score++;
+                setTimeout(showQuestion, 1000);
+            } else {
+                resultElement.textContent = `오답입니다. 정답은 ${correctAnswer} 입니다.`;
+                resultElement.style.color = 'red';
+                wrongAnswers.push(currentTerm);
+                setTimeout(showQuestion, 2000);
+            }
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                checkAnswer();
+            }
+        }
+
+        function startTimer() {
+            const timerElement = document.getElementById('timer');
+            timerInterval = setInterval(() => {
+                const elapsedTime = Date.now() - startTime;
+                const remainingTime = timeLimit - elapsedTime;
+                if (remainingTime <= 0) {
+                    clearInterval(timerInterval);
+                    endQuiz();
+                    return;
+                }
+                const minutes = Math.floor(remainingTime / (60 * 1000));
+                const seconds = Math.floor((remainingTime % (60 * 1000)) / 1000);
+                timerElement.textContent = `남은 시간: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            const percentage = Math.round((score / totalQuestions) * 100);
+            let message;
+            if (percentage <= 30) {
+                message = "공부를 다시 해야겠어요.";
+            } else if (percentage <= 60) {
+                message = "조금만 더 노력해볼까요?";
+            } else if (percentage < 100) {
+                message = "곧 다 맞출 수 있을거에요";
+            } else {
+                message = "완벽해요!!";
+            }
+            document.getElementById('question').textContent = `퀴즈 완료! 점수: ${score}/${totalQuestions} (${percentage}%)`;
+            document.getElementById('result').textContent = message;
+            document.getElementById('resetButton').style.display = 'block';
+            document.getElementById('backButton').style.display = 'block';
+
+            if (wrongAnswers.length > 0) {
+                const wrongAnswersElement = document.getElementById('wrong-answers');
+                wrongAnswersElement.innerHTML = '<h2>오답노트</h2>';
+                wrongAnswers.forEach(term => {
+                    wrongAnswersElement.innerHTML += `<p>${term.korean}: ${term.english}</p>`;
+                });
+                document.getElementById('retryButton').style.display = 'block';
+            }
+            document.getElementById('goBackButton').style.display = 'none';
+        }
+
+        function retryWrongAnswers() {
+            if (wrongAnswers.length === 0) return;
+
+            questionPool = [...wrongAnswers];
+            shuffle(questionPool);
+            wrongAnswers = [];
+            score = 0;
+            document.getElementById('retryButton').style.display = 'none';
+            document.getElementById('wrong-answers').innerHTML = '';
+            initializePool();
+        }
+
+        function resetQuiz() {
+            questionPool = getRandomQuestions(subjects[selectedSubject], selectedQuestions); // 다시 랜덤으로 문제 선택
+            totalQuestions = questionPool.length;
+            startTime = Date.now();
+            initializePool();
+            startTimer();
+            document.getElementById('backButton').style.display = 'none';
+        }
+
+        function backToStart() {
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('start-screen').style.display = 'block';
+            document.getElementById('resetButton').style.display = 'none';
+            document.getElementById('backButton').style.display = 'none';
+            document.getElementById('retryButton').style.display = 'none';
+            document.getElementById('wrong-answers').innerHTML = '';
+            document.getElementById('goBackButton').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
