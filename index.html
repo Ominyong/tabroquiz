@@ -62,11 +62,23 @@
         #backButton, #goBackButton {
             background-color: #f44336;
         }
-	.quiz-term {
+	    .question-wrapper {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.quiz-term {
     font-size: 36px;
     font-weight: bold;
     color: #222;
+    margin-bottom: 10px;
 }
+
+.quiz-prompt {
+    font-size: 18px;
+    color: #555;
+}
+
 
     </style>
 </head>
@@ -88,7 +100,10 @@
         <div id="quiz-screen" style="display: none;">
             <h1 id="subject-title">의학용어 퀴즈</h1>
             <p id="questionNumber"></p> <!-- 문제 번호 표시 -->
-            <p id="question">여기서 문제는 랜덤으로 나오게 됩니다.</p>
+            <div id="question" class="question-wrapper">
+    <div class="quiz-term" id="term"></div>
+    <div class="quiz-prompt">이 한글(영어) 단어의 영어(한글)는 무엇인가요?</div>
+</div>
             <input type="text" id="answer" placeholder="여기에 영어로 입력하세요" onkeydown="handleKeyDown(event)">
             <p id="result"></p>
             <p id="score"></p>
