@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <title>이태형의 우당탕탕 의학용어 퀴즈 2024년도 3학년 2학기 버전</title>
+    <title>이태형의 우당탕탕 의학용어 퀴즈 2025년도 4학년 1학기 버전</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -68,16 +68,16 @@
     <div id="quiz-container">
         <div id="start-screen">
             <h1>이태형의 우당탕탕 의학용어 퀴즈</h1>
-		<p>2024년도 3학년 2학기 ver</p>
+		<p>2025년도 4학년 1학기 ver</p>
 		<p>철자가 틀린 문제가 있으면 알려주시면 수정하겠습니다. 모두 퀴즈 만점 받으세요.</p>
             <label for="questionCount">풀 문제 수 선택:</label>
             <input type="range" id="questionCount" min="1" max="100" value="10" oninput="document.getElementById('rangeValue').textContent = this.value">
             <p>선택한 문제 수: <span id="rangeValue">10</span></p>
-            <button onclick="selectSubject('성인실습퀴즈')">성인실습퀴즈4조(50문제)</button>
-            <button onclick="selectSubject('성인실습퀴즈2')">성인실습퀴즈4조(한영변경)</button>
-            <button onclick="selectSubject('아동실습퀴즈')">아동실습퀴즈(123문제)</button>
-            <button onclick="selectSubject('아동실습퀴즈2')">아동실습퀴즈(한영변경)</button>
-            <button onclick="selectSubject('정신실습퀴즈')">정신실습퀴즈(32문제)</button>
+            <button onclick="selectSubject('성인실습퀴즈')">2024년성인실습퀴즈4조(50문제)</button>
+            <button onclick="selectSubject('성인실습퀴즈2')">2024년성인실습퀴즈4조(한영변경)</button>
+            <button onclick="selectSubject('아동실습퀴즈')">2024년아동실습퀴즈(123문제)</button>
+            <button onclick="selectSubject('아동실습퀴즈2')">2024년아동실습퀴즈(한영변경)</button>
+            <button onclick="selectSubject('정신실습퀴즈')">2025년정신실습퀴즈(54문제)</button>
         </div>
         <div id="quiz-screen" style="display: none;">
             <h1 id="subject-title">의학용어 퀴즈</h1>
@@ -453,38 +453,60 @@
                 { english: '심전도', korean: 'electrocardiography' },
             ],
             '정신실습퀴즈': [
-            { korean: '의존', english: 'dependence' },
-            { korean: '중독', english: 'addiction' },
-            { korean: '망상', english: 'delusion' },
-            { korean: '행동화', english: 'acting out' },
+            { korean: '억압', english: 'repression' },
+            { korean: '취소', english: 'undoing' },
+            { korean: '동일화', english: 'identification' },
+            { korean: '전치', english: 'displacement' },
+            { korean: '보상', english: 'compensation' },
+            { korean: '합리화', english: 'rationalization' },
+            { korean: '퇴행', english: 'regression' },
+            { korean: '억제', english: 'suppression' },
+            { korean: '반동형성', english: 'reaction formation' },
+            { korean: '투사', english: 'projection' },
             { korean: '부정', english: 'denial' },
-            { korean: '섬망', english: 'delirium' },
-            { korean: '정동', english: 'affect' },
-            { korean: '기분', english: 'mood' },
-            { korean: '감정', english: 'emotion' },
-            { korean: '무감동', english: 'apathy' },
-            { korean: '지남력', english: 'orientation' },
+            { korean: '격리', english: 'isolation' },
+            { korean: '지식화', english: 'intellectualization' },
+            { korean: '전환', english: 'conversion' },
+            { korean: '분리', english: 'splitting' },
+            { korean: '해리', english: 'dissociation' },
+            { korean: '지각', english: 'perception' },
+            { korean: '착각', english: 'illusion' },
+            { korean: '환청', english: 'auditory hallucination' },
+            { korean: '환촉', english: 'tactile hallucination' },
+            { korean: '환시', english: 'visual hallucination' },
+            { korean: '고양감, 의기양양', english: 'elation' },
             { korean: '다행감', english: 'euphoria' },
-            { korean: '예민성', english: 'irritability' },
-            { korean: '우울', english: 'depression' },
+            { korean: '기고만장', english: 'exaltation' },
+            { korean: '무쾌감', english: 'anhedonia' },
+            { korean: '정동둔마', english: 'affective blunting' },
             { korean: '양가감정', english: 'ambivalence' },
-            { korean: '불안', english: 'anxiety' },
-            { korean: '공포', english: 'phobia' },
-            { korean: '초조', english: 'agitation' },
-            { korean: '상동증', english: 'stereotypy' },
+            { korean: '정신운동 지연', english: 'psychomotor retardation' },
+            { korean: '사고비약', english: 'flight of idea' },
+            { korean: '연상이완', english: 'loosening of association' },
+            { korean: '우원증', english: 'circumstantiality' },
+            { korean: '지리멸렬', english: 'incoherence' },
             { korean: '보속증', english: 'perseveration' },
+            { korean: '음송증', english: 'verbigeration' },
+            { korean: '작화증', english: 'confabulation' },
+            { korean: '피해망상', english: 'persecutory delusion' },
+            { korean: '과대망상', english: 'grandiose delusion' },
+            { korean: '근긴장증', english: 'dystonia' },
+            { korean: '상동증', english: 'stereotypy' },
             { korean: '강직증', english: 'catalepsy' },
-            { korean: '강박행동', english: 'compulsion' },
-            { korean: '실인증', english: 'agnosia' },
-            { korean: '조증', english: 'manic' },
-            { korean: '환각', english: 'hallucination' },
-            { korean: '인지손상', english: 'cognitive impairment' },
-            { korean: '기억상실', english: 'amnesia' },
-            { korean: '알츠하이머 질환 중간에 점 빼고 답 작성요망', english: 'Alzheimers Disease' },
-            { korean: '일몰 증후군', english: 'sundown syndrome' },
+            { korean: '거부증', english: 'negativism' },
+            { korean: '함구증', english: 'mutism' },
+            { korean: '정좌불능', english: 'akathisia' },
+            { korean: '신체화', english: 'somatization' },
+            { korean: '신경성 대식증', english: 'bulimia nervosa' },
+            { korean: '신경성 식욕부진증', english: 'anorexia nervosa' },
+            { korean: '공황', english: 'panic' },
             { korean: '조현병', english: 'schizophrenia' },
-            { korean: '기분장애', english: 'mood disorders' },
-            { korean: '양극성장애', english: 'bipolar disorders' }
+            { korean: '불면', english: 'insomnia' },
+            { korean: '정신지체', english: 'mental retardation' },
+            { korean: '강박장애', english: 'obsessive compulsive disorder' },
+            { korean: '강박사고', english: 'obsession' },
+            { korean: '강박행동', english: 'compulsion' },
+            { korean: '건강염려증', english: 'hypochondriasis' }
             ]
         };
 
