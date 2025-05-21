@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<!-- saved from url=(0037)https://ominyong.github.io/tabroquiz/ -->
-<html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html lang="ko">
+<head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <meta charset="UTF-8">
     <title>이태형의 우당탕탕 의학용어 퀴즈 2025년도 4학년 1학기 버전</title>
     <style>
         body {
@@ -62,7 +62,7 @@
         #backButton, #goBackButton {
             background-color: #f44336;
         }
-	    .question-wrapper {
+.question-wrapper {
     text-align: center;
     margin: 30px 0;
 }
@@ -79,37 +79,40 @@
     color: #555;
 }
 
-
     </style>
 </head>
 <body>
     <div id="quiz-container">
-        <div id="start-screen" style="display: none;">
+        <div id="start-screen">
             <h1>이태형의 우당탕탕 의학용어 퀴즈</h1>
 		<p>2025년도 4학년 1학기 ver</p>
 		<p>철자가 틀린 문제가 있으면 알려주시면 수정하겠습니다. 모두 퀴즈 만점 받으세요.</p>
             <label for="questionCount">풀 문제 수 선택:</label>
-            <input type="range" id="questionCount" min="1" max="100" value="10" oninput="document.getElementById(&#39;rangeValue&#39;).textContent = this.value">
+            <input type="range" id="questionCount" min="1" max="100" value="10" oninput="document.getElementById('rangeValue').textContent = this.value">
             <p>선택한 문제 수: <span id="rangeValue">10</span></p>
-            <button onclick="selectSubject(&#39;성인실습퀴즈&#39;)">2024년성인실습퀴즈4조(50문제)</button>
-            <button onclick="selectSubject(&#39;성인실습퀴즈2&#39;)">2024년성인실습퀴즈4조(한영변경)</button>
-            <button onclick="selectSubject(&#39;아동실습퀴즈&#39;)">2024년아동실습퀴즈(123문제)</button>
-            <button onclick="selectSubject(&#39;아동실습퀴즈2&#39;)">2024년아동실습퀴즈(한영변경)</button>
-            <button onclick="selectSubject(&#39;정신실습퀴즈&#39;)">2025년정신실습퀴즈(54문제)</button>
+            <button onclick="selectSubject('성인실습퀴즈')">2024년성인실습퀴즈4조(50문제)</button>
+            <button onclick="selectSubject('성인실습퀴즈2')">2024년성인실습퀴즈4조(한영변경)</button>
+            <button onclick="selectSubject('아동실습퀴즈')">2024년아동실습퀴즈(123문제)</button>
+            <button onclick="selectSubject('아동실습퀴즈2')">2024년아동실습퀴즈(한영변경)</button>
+            <button onclick="selectSubject('정신실습퀴즈')">2025년정신실습퀴즈(54문제)</button>
         </div>
-        <div id="quiz-screen" style="display: block;">
-            <h1 id="subject-title">정신실습퀴즈</h1>
-            <p id="questionNumber">문제 1 / 10</p> <!-- 문제 번호 표시 -->
-            <div id="question" class="question-wrapper">이 한글(영어) 단어의 영어(한글)는 무엇인가요? <span class="quiz-term">신경성 식욕부진증</span></div>
+        <div id="quiz-screen" style="display: none;">
+            <h1 id="subject-title">의학용어 퀴즈</h1>
+            <p id="questionNumber"></p> <!-- 문제 번호 표시 -->
+            <div id="question" class="question-wrapper">
+    <div class="quiz-term" id="term"></div>
+    <div class="quiz-prompt">이 한글(영어) 단어의 영어(한글)는 무엇인가요?</div>
+</div>
+
             <input type="text" id="answer" placeholder="여기에 영어로 입력하세요" onkeydown="handleKeyDown(event)">
             <p id="result"></p>
             <p id="score"></p>
-            <p id="timer">남은 시간: 29:46</p>
+            <p id="timer"></p>
             <button id="resetButton" style="display: none;" onclick="resetQuiz()">다시 시작</button>
-            <button id="retryButton" onclick="retryWrongAnswers()" style="display: none;">오답만 모아서 풀기</button>
+            <button id="retryButton" onclick="retryWrongAnswers()">오답만 모아서 풀기</button>
             <button id="backButton" onclick="backToStart()">첫 화면으로 돌아가기</button>
             <div id="wrong-answers"></div>
-            <button id="goBackButton" onclick="backToStart()" style="display: block;">첫 화면으로 돌아가기</button>
+            <button id="goBackButton" onclick="backToStart()">첫 화면으로 돌아가기</button>
         </div>
     </div>
 
@@ -589,8 +592,8 @@
             }
 
             currentTerm = questionPool.pop();
-            document.getElementById('question').innerHTML =
-  `이 한글(영어) 단어의 영어(한글)는 무엇인가요? <span class="quiz-term">${currentTerm.korean}</span>`;
+	document.getElementById('term').textContent = currentTerm.korean;
+
             document.getElementById('questionNumber').textContent = `문제 ${questionNumber} / ${totalQuestions}`;
             document.getElementById('answer').value = '';
             document.getElementById('result').textContent = '';
@@ -705,6 +708,5 @@
             document.getElementById('goBackButton').style.display = 'none';
         }
     </script>
-
-
-</body></html>
+</body>
+</html>
